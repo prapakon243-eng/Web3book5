@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -6,323 +8,356 @@
     <title>Web3Book & Global Mahjong AI</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Kanit) -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #0f172a; color: #e2e8f0; }
-        .gold-text { background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .chat-popup { display: none; position: fixed; bottom: 80px; right: 20px; width: 350px; max-width: 90vw; height: 500px; max-height: 70vh; z-index: 1000; }
-        .chat-popup.active { display: flex; }
-        .modal-popup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; }
-        .modal-popup.active { display: flex; }
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        .gold-text {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-bg {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background-color: #475569;
+            border-radius: 3px;
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between p-3 md:p-6">
 
-    <!-- Header / หัวข้อเว็บ -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 text-center sticky top-0 z-50">
-        <h1 class="text-xl font-bold text-amber-400"><i class="fa-solid fa-book-open mr-2"></i>Web3Book</h1>
-        <p class="text-xs text-slate-400 mt-1">ผู้พัฒนา/เจ้าของแอป: <span class="text-emerald-400 font-medium">ท่านแม่ทัพ (Prapakon)</span></p>
+    <!-- Header Section -->
+    <header class="text-center my-4">
+        <div class="inline-flex items-center gap-2 mb-2">
+            <i class="fa-solid fa-book-bookmark text-amber-400 text-3xl"></i>
+            <h1 class="text-3xl md:text-4xl font-bold gold-text">Web3Book</h1>
+        </div>
+        <p class="text-sm text-slate-400">ผู้พัฒนา/เจ้าของแอป: <span class="text-emerald-400 font-semibold">Prapakon (Prakorn)</span></p>
     </header>
 
-    <!-- เนื้อหาหลัก -->
-    <main class="container mx-auto p-4 max-w-2xl pb-24 space-y-6">
-        
-        <!-- แผงตั้งค่า Gemini API Key -->
-        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-xl">
-            <h2 class="text-lg font-bold text-amber-400 mb-2 flex items-center gap-2">
-                <i class="fa-solid fa-key"></i> ตั้งค่า Gemini API Key
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto w-full flex-grow space-y-6">
+
+        <!-- API Key Setting Box -->
+        <section class="card-bg p-4 md:p-6 rounded-2xl shadow-xl">
+            <h2 class="text-lg font-semibold text-amber-400 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-key"></i> ตั้งค่า Google Gemini API Key
             </h2>
-            <p class="text-xs text-slate-300 mb-3">
-                * กรอก API Key จาก Google AI Studio เพื่อเปิดใช้งานผู้ช่วย AI
-            </p>
-            
-            <div class="space-y-3">
-                <input type="password" id="apiKeyInput" placeholder="วาง Gemini API Key ที่นี่..." 
-                       class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400">
-                
+            <p class="text-xs text-slate-400 mb-3">* กรอก API Key จาก Google AI Studio เพื่อเปิดใช้งานผู้ช่วย AI</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input type="password" id="apiKeyInput" placeholder="วาง API Key ของคุณที่นี่ (AIzaSy...)" 
+                    class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400">
                 <div class="flex gap-2">
-                    <button onclick="saveApiKey()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm flex-1 flex items-center justify-center gap-1">
+                    <button onclick="saveApiKey()" class="gold-gradient text-slate-950 font-semibold px-4 py-2.5 rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
                         <i class="fa-solid fa-floppy-disk"></i> บันทึก Key
                     </button>
-                    <button onclick="clearApiKey()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-1">
+                    <button onclick="clearApiKey()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl text-sm transition">
                         <i class="fa-solid fa-trash"></i> ล้าง
                     </button>
-                    <button onclick="testApiConnection()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm flex-1 flex items-center justify-center gap-1">
+                    <button onclick="testApiKey()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm transition">
                         <i class="fa-solid fa-vial"></i> ทดสอบ API
                     </button>
                 </div>
             </div>
+            <div id="apiStatus" class="mt-3 text-xs hidden p-2.5 rounded-lg"></div>
+        </section>
 
-            <!-- สถานะการเชื่อมต่อ -->
-            <div id="statusMessage" class="text-xs font-medium mt-2 p-2 rounded hidden"></div>
-        </div>
-
-        <!-- การ์ด E-book และปุ่มเปิดอ่าน -->
-        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl text-center space-y-4">
-            <div class="w-28 h-36 bg-amber-500/20 border-2 border-amber-400 rounded-lg mx-auto flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-book-open text-5xl text-amber-400"></i>
+        <!-- E-book Section -->
+        <section class="card-bg p-4 md:p-6 rounded-2xl shadow-xl">
+            <div class="border-b border-slate-700 pb-4 mb-4">
+                <h2 class="text-2xl font-bold gold-text flex items-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> Global Mahjong & Web3 Guide
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">คู่มือเรียนรู้ไพ่นกกระจอกสากล และการประยุกต์ใช้ในโลก Web3 / Pi Network</p>
             </div>
-            <div>
-                <h3 class="font-bold text-white text-xl">Global Mahjong & Web3 Guide</h3>
-                <p class="text-xs text-slate-400 mt-1">คู่มือเรียนรู้ไพ่นกกระจอกสากลและองค์ความรู้บน Web3 (ฉบับเพื่อการศึกษาฟรี)</p>
-            </div>
-            
-            <button onclick="openEbook()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-book-reader text-lg"></i> 📖 เปิดอ่าน E-book
-            </button>
-        </div>
 
-    </main>
-
-    <!-- หน้าต่างอ่าน E-book (Modal) -->
-    <div id="ebookModal" class="modal-popup">
-        <div class="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-2xl p-5 max-h-[85vh] flex flex-col shadow-2xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-700">
-                <h3 class="font-bold text-amber-400 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-book"></i> E-book Reader
-                </h3>
-                <button onclick="closeEbook()" class="text-slate-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark text-xl"></i>
+            <!-- Chapter Selection Tabs -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+                <button onclick="openChapter(1)" id="btn-ch1" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
+                    บทที่ 1: พื้นฐานไพ่นกกระจอก
+                </button>
+                <button onclick="openChapter(2)" id="btn-ch2" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
+                    บทที่ 2: กติกาและการทำแต้ม
+                </button>
+                <button onclick="openChapter(3)" id="btn-ch3" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
+                    บทที่ 3: กลยุทธ์การเล่นเบื้องต้น
+                </button>
+                <button onclick="openChapter(4)" id="btn-ch4" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
+                    บทที่ 4: การเชื่อมต่อ Web3 & Pi
                 </button>
             </div>
 
-            <!-- ตัวเลือกบทเรียน -->
-            <div class="flex gap-2 my-3 overflow-x-auto pb-2 text-xs">
-                <button onclick="showChapter(1)" id="tab-1" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold whitespace-nowrap">บทที่ 1: Intro Web3</button>
-                <button onclick="showChapter(2)" id="tab-2" class="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 font-medium whitespace-nowrap">บทที่ 2: กติกาไพ่นกกระจอก</button>
-                <button onclick="showChapter(3)" id="tab-3" class="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 font-medium whitespace-nowrap">บทที่ 3: รูปแบบไพ่ชนะ</button>
-                <button onclick="showChapter(4)" id="tab-4" class="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 font-medium whitespace-nowrap">บทที่ 4: การใช้ AI ฝึกฝน</button>
+            <!-- Chapter Content Box -->
+            <div id="chapterContent" class="bg-slate-900/60 p-4 md:p-6 rounded-xl border border-slate-700 text-sm leading-relaxed text-slate-200 min-h-[220px]">
+                <!-- Dynamic Content Will Appear Here -->
+            </div>
+        </section>
+
+        <!-- AI Assistant Chat Section -->
+        <section class="card-bg rounded-2xl shadow-xl overflow-hidden flex flex-col h-[450px]">
+            <div class="bg-slate-800/90 p-4 border-b border-slate-700 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg font-bold">
+                        🀄
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-100 text-sm">Mahjong AI Assistant</h3>
+                        <p class="text-[11px] text-emerald-400">พร้อมตอบคำถาม E-book & Web3</p>
+                    </div>
+                </div>
+                <span class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full">Gemini 2.5</span>
             </div>
 
-            <!-- เนื้อหาบทเรียน -->
-            <div id="chapterContent" class="flex-1 overflow-y-auto p-4 bg-slate-900/60 rounded-xl border border-slate-700/50 text-sm space-y-3 leading-relaxed">
-                <!-- เนื้อหาจะเปลี่ยนตามบทเรียน -->
-            </div>
-
-            <div class="pt-3 border-t border-slate-700 flex justify-between items-center text-xs text-slate-400">
-                <span>Web3Book Educational Edition</span>
-                <button onclick="closeEbook()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-1.5 rounded-lg">ปิดหน้าต่าง</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ปุ่มเปิดแชทผู้ช่วย AI -->
-    <button onclick="toggleChat()" class="fixed bottom-5 right-5 w-14 h-14 bg-amber-500 hover:bg-amber-600 rounded-full shadow-2xl flex items-center justify-center text-2xl text-slate-950 z-50 transition-transform active:scale-95">
-        🦉
-    </button>
-
-    <!-- หน้าต่างแชท AI Popup -->
-    <div id="chatPopup" class="chat-popup bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl flex-col overflow-hidden">
-        <!-- Chat Header -->
-        <div class="bg-slate-900 p-3 border-b border-slate-700 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-xl">🦉</span>
-                <div>
-                    <h4 class="text-sm font-bold text-amber-400">Mahjong AI Assistant</h4>
-                    <p class="text-[10px] text-emerald-400">ผู้ช่วยประจำ E-book (Live Mode)</p>
+            <!-- Chat Messages Container -->
+            <div id="chatContainer" class="flex-grow p-4 overflow-y-auto space-y-3 chat-scroll text-sm">
+                <div class="flex gap-2 max-w-[85%]">
+                    <div class="bg-slate-700 text-slate-200 p-3 rounded-2xl rounded-tl-none">
+                        สวัสดีครับ! ข้าคือ Mahjong AI ผู้ช่วยประจำหนังสือ Web3Book ยินดีตอบคำถามทั้งเรื่องไพ่นกกระจอก บทเรียน E-book และระบบ Web3 พิมพ์ถามมาได้เลยครับ! 🀄✨
+                    </div>
                 </div>
             </div>
-            <button onclick="toggleChat()" class="text-slate-400 hover:text-white p-1">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-        </div>
 
-        <!-- Chat Messages -->
-        <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs">
-            <div class="bg-slate-700/50 p-2.5 rounded-xl border border-slate-600/50 text-slate-200">
-                สวัสดีครับท่านแม่ทัพ! ข้าคือ Mahjong AI ผู้ช่วยประจำหนังสือ Web3Book ยินดีตอบคำถามทั้งเรื่องไพ่นกกระจอกและ Web3 พิมพ์ถามมาได้เลยครับ! 🀄✨
-            </div>
-        </div>
+            <!-- Chat Input Form -->
+            <form onsubmit="handleSendMessage(event)" class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2">
+                <input type="text" id="userInput" placeholder="พิมพ์คำถามเกี่ยวกับบทเรียน หรือไพ่นกกระจอก..." 
+                    class="flex-grow bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400">
+                <button type="submit" class="gold-gradient text-slate-950 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </section>
 
-        <!-- Chat Input -->
-        <div class="p-2 bg-slate-900 border-t border-slate-700 flex gap-2">
-            <input type="text" id="userInput" placeholder="พิมพ์ข้อความคุยกับ Mahjong..." 
-                   onkeypress="if(event.key==='Enter') sendMessage()"
-                   class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400">
-            <button onclick="sendMessage()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-2 rounded-xl text-xs flex items-center justify-center">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
+    </main>
 
+    <!-- Footer Section -->
+    <footer class="text-center my-4 text-xs text-slate-500">
+        &copy; 2026 Web3Book Studio by Prapakon (Prakorn). Powered by Pi Network & Gemini AI.
+    </footer>
+
+    <!-- JavaScript Application Logic -->
     <script>
-        // เนื้อหา E-book 4 บท
-        const chapters = {
-            1: `<h4 class="text-amber-400 font-bold text-base mb-2">บทที่ 1: ทำความรู้จัก Web3Book & แพลตฟอร์มการเรียนรู้</h4>
-                <p>ยินดีต้อนรับสู่ <b>Web3Book</b> แพลตฟอร์มเพื่อการศึกษาที่มุ่งหวังให้ความรู้ฟรีแก่ผู้ใช้งานแบบไม่มีค่าใช้จ่าย</p>
-                <p>ในยุค Web3 เทคโนโลยีสืบค้นและเรียนรู้สามารถกระจายตัวได้อย่างเสรี ผู้เรียนสามารถเข้าถึงองค์ความรู้สากล เช่น กติกาไพ่นกกระจอก การวิเคราะห์เชิงกลยุทธ์ และเทคโนโลยีสมัยใหม่ได้ตลอดเวลาผ่านแอปพลิเคชันนี้</p>`,
-            
-            2: `<h4 class="text-amber-400 font-bold text-base mb-2">บทที่ 2: พื้นฐานกติกาไพ่นกกระจอกสากล (Global Mahjong)</h4>
-                <p>ไพ่นกกระจอกสากลประกอบด้วยไพ่ทั้งหมด 3 หมวดหลัก ได้แก่:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li><b>หมวดหมื่น (Wan/Characters):</b> เลข 1-9 หมื่น</li>
-                    <li><b>หมวดเชือก/ไผ่ (Suo/Bamboos):</b> เลข 1-9 เชือก</li>
-                    <li><b>หมวดเหรียญ/ตง (Tong/Dots):</b> เลข 1-9 เหรียญ</li>
-                </ul>
-                <p class="mt-2">เป้าหมายหลักของการเล่นคือการจัดชุดไพ่ในมือให้ครบ 4 กลุ่ม (กลุ่มละ 3 ใบ) + 1 คู่ตาส สองใบ รวมเป็น 14 ใบเพื่อชนะ (Hu)</p>`,
-            
-            3: `<h4 class="text-amber-400 font-bold text-base mb-2">บทที่ 3: รูปแบบการชนะและการนับกลุ่มไพ่</h4>
-                <p>การจัดกลุ่มไพ่ 3 ใบแบ่งออกเป็น 2 ประเภทหลัก:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li><b>เรียง (Chow):</b> ตัวเลขเรียงกัน 3 ใบในหมวดเดียวกัน เช่น 2-3-4 เหรียญ</li>
-                    <li><b>ตอง (Pung):</b> ไพ่หน้าตาเหมือนกันเป๊ะ 3 ใบ เช่น 8-8-8 หมื่น</li>
-                </ul>
-                <p class="mt-2">การผสมผสานกลุ่มเรียงและตองอย่างถูกกฎ จะช่วยให้เราสามารถเข้าสู่สภาวะ "รอชนะ" (Ready Hand) ได้เร็วขึ้น</p>`,
-            
-            4: `<h4 class="text-amber-400 font-bold text-base mb-2">บทที่ 4: การใช้ Mahjong AI ช่วยฝึกฝนและคำนวณ</h4>
-                <p>ผู้เรียนสามารถใช้ปุ่มนกฮูก 🦉 มุมขวาล่าง เพื่อสอบถาม AI Assistant ได้ตลอดเวลา เช่น:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li><i>"ขอวิธีจัดไพ่เมื่อเปิดได้ไพ่ตอง"</i></li>
-                    <li><i>"กติกาการตัดไพ่ดอกไม้ทำอย่างไร?"</i></li>
-                    <li><i>"อธิบายคำว่า Chow และ Pung ให้ฟังหน่อย"</i></li>
-                </ul>
-                <p class="mt-2">AI จะช่วยวิเคราะห์และให้คำตอบย่อสั้น เข้าใจง่าย เพื่อเสริมสร้างความเข้าใจให้ผู้เรียนอย่างรวดเร็ว</p>`
+        // E-book Chapters Data
+        const bookChapters = {
+            1: {
+                title: "บทที่ 1: พื้นฐานไพ่นกกระจอก (Mahjong Basics)",
+                content: `
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 1: อุปกรณ์และประเภทของไพ่</h3>
+                    <p class="mb-3">ไพ่นกกระจอกสากลประกอบด้วยไพ่ทั้งหมด 144 ใบ แบ่งออกเป็นกลุ่มหลักๆ ดังนี้:</p>
+                    <ul class="list-disc pl-5 space-y-1 mb-3">
+                        <li><strong>ไพ่ตัวเลข (Suits):</strong> สายฝน (Dots/Bing), สลัก (Bamb/Tiao), และหมื่น (Characters/Wan) อย่างละ 36 ใบ (เลข 1-9 ชุดละ 4 ใบ)</li>
+                        <li><strong>ไพ่ทิศ (Winds):</strong> ตะวันออก, ตะวันตก, ใต้, เหนือ รวม 16 ใบ</li>
+                        <li><strong>ไพ่มังกร (Dragons):</strong> มังกรแดง (Zhong), มังกรเขียว (Fa), มังกรขาว (Bai) รวม 12 ใบ</li>
+                        <li><strong>ไพ่ดอกไม้และฤดูกาล:</strong> พิเศษ 8 ใบ เพิ่มแต้มโบนัส</li>
+                    </ul>
+                    <p class="text-slate-400 text-xs">* เป้าหมายของการเล่นคือการจัดชุดไพ่ 14 ใบให้เข้ากลุ่ม 4 ชุด + 1 ตา (Pair)</p>
+                `
+            },
+            2: {
+                title: "บทที่ 2: กติกาและการทำแต้ม (Rules & Scoring)",
+                content: `
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 2: การสร้างชุดไพ่และการชนะ</h3>
+                    <p class="mb-3">การจัดกลุ่มชุดไพ่เพื่อชนะ (Win / Hu) ประกอบด้วยการผสมรูปแบบเหล่านี้:</p>
+                    <ul class="list-disc pl-5 space-y-1 mb-3">
+                        <li><strong>Chow (เรียง):</strong> ไพ่ตัวเลขชนิดเดียวกันเรียงลำดับ 3 ใบ เช่น 2-3-4</li>
+                        <li><strong>Pung (ตอง):</strong> ไพ่เหมือนกัน 3 ใบ</li>
+                        <li><strong>Kong (สี่):</strong> ไพ่เหมือนกัน 4 ใบ</li>
+                        <li><strong>Eye (ตา):</strong> ไพ่คู่เหมือนกัน 2 ใบ (ใช้เป็นคู่จบ)</li>
+                    </ul>
+                    <p class="text-amber-400 text-xs">สูตรสำเร็จของการชนะ: (3 + 3 + 3 + 3 + 2) = 14 ใบ</p>
+                `
+            },
+            3: {
+                title: "บทที่ 3: กลยุทธ์การเล่นเบื้องต้น (Basic Strategies)",
+                content: `
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 3: เทคนิคและการอ่านเกม</h3>
+                    <p class="mb-3">เคล็ดลับสำหรับผู้เริ่มเล่นเพื่อเพิ่มโอกาสชนะ:</p>
+                    <ul class="list-disc pl-5 space-y-1 mb-3">
+                        <li><strong>การทิ้งไพ่ช่วงแรก:</strong> ให้เลือกทิ้งไพ่ทิศหรือมังกรที่ไม่ครบคู่ก่อนเพื่อเปิดทาง</li>
+                        <li><strong>การเก็บไพ่กลาง:</strong> ไพ่ตัวเลข 3, 4, 5, 6, 7 มีโอกาสเกิด Chow ได้ง่ายที่สุด</li>
+                        <li><strong>การคุมเกม:</strong> สังเกตการทิ้งไพ่ของคู่แข่งเพื่อเลี่ยงการทิ้งไพ่แจกแต้ม (Don't Feed)</li>
+                    </ul>
+                `
+            },
+            4: {
+                title: "บทที่ 4: การเชื่อมต่อ Web3 & Pi Network",
+                content: `
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 4: จากเกมสู่ระบบนิเวศน์ Web3</h3>
+                    <p class="mb-3">แอปพลิเคชัน Web3Book นำทฤษฎีเกม Mahjong มาประยุกต์ร่วมกับบล็อกเชน Pi Network:</p>
+                    <ul class="list-disc pl-5 space-y-1 mb-3">
+                        <li><strong>Pi SDK Integration:</strong> รองรับระบบการชำระเงินและสิทธิ์ใช้งานผ่าน Pi Browser</li>
+                        <li><strong>Decentralized Content:</strong> ข้อมูลหนังสือเปิดกว้าง รวดเร็ว และปลอดภัย</li>
+                        <li><strong>AI Assistant:</strong> ผสาน Gemini 2.5 ช่วยวิเคราะห์และให้คำแนะนำแบบ Real-time</li>
+                    </ul>
+                `
+            }
         };
 
+        // Initialize App
         document.addEventListener("DOMContentLoaded", () => {
-            const savedKey = localStorage.getItem("gemini_api_key");
-            if (savedKey) {
-                document.getElementById("apiKeyInput").value = savedKey;
-                showStatus("✅ โหลด API Key ที่บันทึกไว้แล้ว!", "bg-emerald-900/50 text-emerald-300 border border-emerald-700");
-            }
-            showChapter(1);
+            loadSavedApiKey();
+            openChapter(1);
         });
 
-        function openEbook() {
-            document.getElementById("ebookModal").classList.add("active");
-        }
+        // Chapter Switching
+        function openChapter(chNum) {
+            const container = document.getElementById("chapterContent");
+            container.innerHTML = bookChapters[chNum].content;
 
-        function closeEbook() {
-            document.getElementById("ebookModal").classList.remove("active");
-        }
-
-        function showChapter(num) {
-            document.getElementById("chapterContent").innerHTML = chapters[num];
-            for (let i = 1; i <= 4; i++) {
-                const btn = document.getElementById(`tab-${i}`);
-                if (i === num) {
-                    btn.className = "px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold whitespace-nowrap";
+            document.querySelectorAll(".ch-btn").forEach((btn, index) => {
+                if (index + 1 === chNum) {
+                    btn.classList.add("bg-amber-500", "text-slate-950", "border-amber-400");
+                    btn.classList.remove("bg-slate-800", "text-slate-300");
                 } else {
-                    btn.className = "px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 font-medium whitespace-nowrap";
+                    btn.classList.remove("bg-amber-500", "text-slate-950", "border-amber-400");
+                    btn.classList.add("bg-slate-800", "text-slate-300");
                 }
-            }
+            });
         }
 
-        function showStatus(msg, classes) {
-            const el = document.getElementById("statusMessage");
-            el.className = `text-xs font-medium mt-2 p-2 rounded ${classes}`;
-            el.innerHTML = msg;
-            el.classList.remove("hidden");
-        }
-
+        // API Key Management
         function saveApiKey() {
             const key = document.getElementById("apiKeyInput").value.trim();
-            if (!key) {
-                alert("กรุณากรอก API Key ก่อนบันทึกครับ");
+            if(!key) {
+                showApiStatus("กรุณากรอก API Key ก่อนบันทึกครับ", "bg-rose-900/80 text-rose-200");
                 return;
             }
             localStorage.setItem("gemini_api_key", key);
-            showStatus("✅ บันทึก API Key สำเร็จ!", "bg-emerald-900/50 text-emerald-300 border border-emerald-700");
+            showApiStatus("บันทึก API Key สำเร็จแล้ว!", "bg-emerald-900/80 text-emerald-200");
+        }
+
+        function loadSavedApiKey() {
+            const savedKey = localStorage.getItem("gemini_api_key");
+            if(savedKey) {
+                document.getElementById("apiKeyInput").value = savedKey;
+            }
         }
 
         function clearApiKey() {
             localStorage.removeItem("gemini_api_key");
             document.getElementById("apiKeyInput").value = "";
-            showStatus("🗑️ ล้าง API Key เรียบร้อยแล้ว", "bg-slate-700 text-slate-300");
+            showApiStatus("ล้าง API Key เรียบร้อยแล้ว", "bg-amber-900/80 text-amber-200");
         }
 
-        function toggleChat() {
-            const popup = document.getElementById("chatPopup");
-            popup.classList.toggle("active");
+        function showApiStatus(msg, classes) {
+            const statusDiv = document.getElementById("apiStatus");
+            statusDiv.className = `mt-3 text-xs p-2.5 rounded-lg ${classes}`;
+            statusDiv.innerText = msg;
+            statusDiv.classList.remove("hidden");
         }
 
-        async function fetchGemini(promptText) {
+        async function testApiKey() {
+            const key = document.getElementById("apiKeyInput").value.trim() || localStorage.getItem("gemini_api_key");
+            if(!key) {
+                showApiStatus("ไม่พบ API Key ให้ทดสอบ กรุณากรอก Key ก่อนครับ", "bg-rose-900/80 text-rose-200");
+                return;
+            }
+
+            showApiStatus("กำลังทดสอบการเชื่อมต่อ API...", "bg-blue-900/80 text-blue-200");
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: "สวัสดี" }] }]
+                    })
+                });
+
+                if(response.ok) {
+                    showApiStatus("✅ การเชื่อมต่อสำเร็จ! API Key และ Model Gemini 2.5 พร้อมใช้งาน 100%", "bg-emerald-900/80 text-emerald-200");
+                } else {
+                    const errData = await response.json();
+                    showApiStatus(`❌ ทดสอบล้มเหลว: ${errData.error?.message || 'API Response Error'}`, "bg-rose-900/80 text-rose-200");
+                }
+            } catch(err) {
+                showApiStatus(`❌ ข้อผิดพลาดในการเชื่อมต่อ: ${err.message}`, "bg-rose-900/80 text-rose-200");
+            }
+        }
+
+        // Chat AI Handler
+        async function handleSendMessage(e) {
+            e.preventDefault();
+            const inputEl = document.getElementById("userInput");
+            const text = inputEl.value.trim();
+            if(!text) return;
+
             const apiKey = localStorage.getItem("gemini_api_key") || document.getElementById("apiKeyInput").value.trim();
-            
-            if (!apiKey) {
-                throw new Error("ยังไม่ได้บันทึก Gemini API Key กรุณากรอกและกดบันทึกก่อนครับ");
+            if(!apiKey) {
+                appendChatMessage("System", "กรุณากรอกและบันทึก API Key ด้านบนก่อนเริ่มสนทนานะครับ");
+                return;
             }
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            appendChatMessage("User", text);
+            inputEl.value = "";
 
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: "คุณคือ Mahjong AI ผู้ช่วยอัจฉริยะประจำแอป Web3Book คอยตอบคำถามเกี่ยวกับกติกาไพ่นกกระจอกและหนังสือ Web3 ด้วยความสุภาพ สนุกสนาน และให้ความรู้ฟรี ตอบกระชับได้ใจความ\n\nคำถาม: " + promptText
+            const loadingId = appendChatMessage("AI", "กำลังคิดคำตอบ...");
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ 
+                            parts: [{ 
+                                text: `คุณคือ Mahjong AI ผู้ช่วยประจำหนังสือ Web3Book ของคุณ Prapakon (Prakorn) ให้ตอบคำถามเกี่ยวกับไพ่นกกระจอก E-book หรือ Web3 อย่างสุภาพ เป็นกันเอง และสั้นกระชับ:\nคำถาม: ${text}` 
+                            }] 
                         }]
-                    }]
-                })
-            });
+                    })
+                });
 
-            const data = await response.json();
-            
-            if (!response.ok) {
-                const errDetail = data.error ? data.error.message : JSON.stringify(data);
-                throw new Error(`API Error Status ${response.status}: ${errDetail}`);
-            }
-
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                throw new Error("ไม่ได้รับคำตอบจาก AI");
-            }
-        }
-
-        async function testApiConnection() {
-            showStatus("⏳ กำลังทดสอบการเชื่อมต่อ API...", "bg-amber-900/50 text-amber-300 border border-amber-700");
-            try {
-                const reply = await fetchGemini("ทดสอบระบบ ตอบสั้นๆ ว่าพร้อมใช้งาน");
-                showStatus(`🎉 เชื่อมต่อสำเร็จ! AI ตอบกลับว่า: "${reply}"`, "bg-emerald-900/50 text-emerald-300 border border-emerald-700");
-            } catch (err) {
-                showStatus(`❌ ทดสอบล้มเหลว: ${err.message}`, "bg-rose-900/50 text-rose-300 border border-rose-700");
-            }
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById("userInput");
-            const text = input.value.trim();
-            if (!text) return;
-
-            const messagesDiv = document.getElementById("chatMessages");
-            
-            messagesDiv.innerHTML += `
-                <div class="bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl text-amber-200 text-right">
-                    ${text}
-                </div>
-            `;
-            input.value = "";
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            const loadingId = "loading-" + Date.now();
-            messagesDiv.innerHTML += `
-                <div id="${loadingId}" class="bg-slate-700/30 p-2 rounded-xl text-slate-400 italic text-left">
-                    🦉 Mahjong AI กำลังพิมพ์...
-                </div>
-            `;
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            try {
-                const aiReply = await fetchGemini(text);
+                const data = await response.json();
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ไม่สามารถประมวลผลคำตอบได้";
                 
-                document.getElementById(loadingId).remove();
-                messagesDiv.innerHTML += `
-                    <div class="bg-slate-700/80 border border-slate-600 p-2.5 rounded-xl text-slate-100 text-left">
-                        ${aiReply.replace(/\n/g, '<br>')}
-                    </div>
-                `;
-            } catch (err) {
-                document.getElementById(loadingId).remove();
-                messagesDiv.innerHTML += `
-                    <div class="bg-rose-900/50 border border-rose-700 p-2.5 rounded-xl text-rose-200 text-left">
-                        <b>❌ ไม่สามารถเรียก AI ได้:</b> ${err.message}
-                    </div>
-                `;
+                updateChatMessage(loadingId, reply);
+            } catch(err) {
+                updateChatMessage(loadingId, `เกิดข้อผิดพลาด: ${err.message}`);
             }
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function appendChatMessage(sender, text) {
+            const chatContainer = document.getElementById("chatContainer");
+            const msgId = "msg-" + Date.now();
+            
+            const isUser = sender === "User";
+            const align = isUser ? "justify-end" : "justify-start";
+            const bg = isUser ? "gold-gradient text-slate-950 font-medium" : "bg-slate-700 text-slate-200";
+            const rounded = isUser ? "rounded-tr-none" : "rounded-tl-none";
+
+            const html = `
+                <div class="flex gap-2 ${align}">
+                    <div id="${msgId}" class="${bg} p-3 rounded-2xl ${rounded} max-w-[85%]">
+                        ${text}
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', html);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return msgId;
+        }
+
+        function updateChatMessage(id, newText) {
+            const el = document.getElementById(id);
+            if(el) {
+                el.innerText = newText;
+                const chatContainer = document.getElementById("chatContainer");
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
         }
     </script>
 </body>
