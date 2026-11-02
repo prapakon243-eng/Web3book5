@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -80,24 +81,24 @@
         <section class="card-bg p-4 md:p-6 rounded-2xl shadow-xl">
             <div class="border-b border-slate-700 pb-4 mb-4">
                 <h2 class="text-2xl font-bold gold-text flex items-center gap-2">
-                    <i class="fa-solid fa-book-open"></i> Global Mahjong & Web3 Guide
+                    <i class="fa-solid fa-book-open"></i> Web3Book & Digital Publishing Guide
                 </h2>
-                <p class="text-xs text-slate-400 mt-1">คู่มือเรียนรู้ไพ่นกกระจอกสากล และการประยุกต์ใช้ในโลก Web3 / Pi Network</p>
+                <p class="text-xs text-slate-400 mt-1">คู่มือการสร้างสรรค์ E-book, การเผยแพร่เนื้อหา และการประยุกต์ใช้ในโลก Web3 / Pi Network</p>
             </div>
 
             <!-- Chapter Selection Tabs -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
                 <button onclick="openChapter(1)" id="btn-ch1" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
-                    บทที่ 1: พื้นฐานไพ่นกกระจอก
+                    บทที่ 1: พื้นฐาน E-book
                 </button>
                 <button onclick="openChapter(2)" id="btn-ch2" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
-                    บทที่ 2: กติกาและการทำแต้ม
+                    บทที่ 2: โครงสร้างและการจัดหน้า
                 </button>
                 <button onclick="openChapter(3)" id="btn-ch3" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
-                    บทที่ 3: กลยุทธ์การเล่นเบื้องต้น
+                    บทที่ 3: กลยุทธ์การเผยแพร่
                 </button>
                 <button onclick="openChapter(4)" id="btn-ch4" class="ch-btn p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs md:text-sm text-center border border-slate-700 transition">
-                    บทที่ 4: การเชื่อมต่อ Web3 & Pi
+                    บทที่ 4: เชื่อมต่อ Web3 & Pi
                 </button>
             </div>
 
@@ -119,21 +120,21 @@
                         <p class="text-[11px] text-emerald-400">พร้อมตอบคำถาม E-book & Web3</p>
                     </div>
                 </div>
-                <span class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full">Gemini 2.5</span>
+                <span class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full">Gemini 2.0 Flash</span>
             </div>
 
             <!-- Chat Messages Container -->
             <div id="chatContainer" class="flex-grow p-4 overflow-y-auto space-y-3 chat-scroll text-sm">
                 <div class="flex gap-2 max-w-[85%]">
                     <div class="bg-slate-700 text-slate-200 p-3 rounded-2xl rounded-tl-none">
-                        สวัสดีครับ! ข้าคือ Mahjong AI ผู้ช่วยประจำหนังสือ Web3Book ยินดีตอบคำถามทั้งเรื่องไพ่นกกระจอก บทเรียน E-book และระบบ Web3 พิมพ์ถามมาได้เลยครับ! 🀄✨
+                        สวัสดีครับ! ข้าคือ Mahjong AI ผู้ช่วยประจำหนังสือ Web3Book ยินดีตอบคำถามทั้งเรื่องการจัดทำ E-book บทเรียน และระบบ Web3 พิมพ์ถามมาได้เลยครับ! 📚✨
                     </div>
                 </div>
             </div>
 
             <!-- Chat Input Form -->
             <form onsubmit="handleSendMessage(event)" class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2">
-                <input type="text" id="userInput" placeholder="พิมพ์คำถามเกี่ยวกับบทเรียน หรือไพ่นกกระจอก..." 
+                <input type="text" id="userInput" placeholder="พิมพ์คำถามเกี่ยวกับบทเรียน E-book หรือ Web3..." 
                     class="flex-grow bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400">
                 <button type="submit" class="gold-gradient text-slate-950 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition">
                     <i class="fa-solid fa-paper-plane"></i>
@@ -150,57 +151,55 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // E-book Chapters Data
+        // E-book Chapters Data (Pure E-book & Web3 Content)
         const bookChapters = {
             1: {
-                title: "บทที่ 1: พื้นฐานไพ่นกกระจอก (Mahjong Basics)",
+                title: "บทที่ 1: พื้นฐาน E-book (Digital Publishing Basics)",
                 content: `
-                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 1: อุปกรณ์และประเภทของไพ่</h3>
-                    <p class="mb-3">ไพ่นกกระจอกสากลประกอบด้วยไพ่ทั้งหมด 144 ใบ แบ่งออกเป็นกลุ่มหลักๆ ดังนี้:</p>
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 1: แนวคิดและการเริ่มต้นทำ E-book</h3>
+                    <p class="mb-3">การจัดทำหนังสือดิจิทัลหรือ E-book เป็นเครื่องมือทรงพลังในการถ่ายทอดความรู้และสร้างรายได้ในยุคดิจิทัล โดยมีองค์ประกอบหลัก:</p>
                     <ul class="list-disc pl-5 space-y-1 mb-3">
-                        <li><strong>ไพ่ตัวเลข (Suits):</strong> สายฝน (Dots/Bing), สลัก (Bamb/Tiao), และหมื่น (Characters/Wan) อย่างละ 36 ใบ (เลข 1-9 ชุดละ 4 ใบ)</li>
-                        <li><strong>ไพ่ทิศ (Winds):</strong> ตะวันออก, ตะวันตก, ใต้, เหนือ รวม 16 ใบ</li>
-                        <li><strong>ไพ่มังกร (Dragons):</strong> มังกรแดง (Zhong), มังกรเขียว (Fa), มังกรขาว (Bai) รวม 12 ใบ</li>
-                        <li><strong>ไพ่ดอกไม้และฤดูกาล:</strong> พิเศษ 8 ใบ เพิ่มแต้มโบนัส</li>
+                        <li><strong>การกำหนดกลุ่มเป้าหมาย:</strong> สำรวจความต้องการของผู้อ่านเพื่อเลือกหัวข้อที่น่าสนใจ</li>
+                        <li><strong>การวางโครงสร้างเนื้อหา:</strong> แบ่งบทตอนให้กระชับ อ่านง่าย และมีประโยชน์จริง</li>
+                        <li><strong>การออกแบบหน้าปก:</strong> ดึงดูดสายตาและสื่อถึงเนื้อหาภายในเล่มได้อย่างชัดเจน</li>
                     </ul>
-                    <p class="text-slate-400 text-xs">* เป้าหมายของการเล่นคือการจัดชุดไพ่ 14 ใบให้เข้ากลุ่ม 4 ชุด + 1 ตา (Pair)</p>
+                    <p class="text-slate-400 text-xs">* เป้าหมายคือการส่งมอบประสบการณ์การอ่านที่ดีที่สุดบนอุปกรณ์มือถือและแพลตฟอร์มต่างๆ</p>
                 `
             },
             2: {
-                title: "บทที่ 2: กติกาและการทำแต้ม (Rules & Scoring)",
+                title: "บทที่ 2: โครงสร้างและการจัดหน้า (Layout & Design)",
                 content: `
-                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 2: การสร้างชุดไพ่และการชนะ</h3>
-                    <p class="mb-3">การจัดกลุ่มชุดไพ่เพื่อชนะ (Win / Hu) ประกอบด้วยการผสมรูปแบบเหล่านี้:</p>
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 2: เทคนิคการจัดหน้าด้วยเครื่องมือดิจิทัล</h3>
+                    <p class="mb-3">การจัดทำเนื้อหาให้ออกมาสวยงามและอ่านง่ายบนสมาร์ทโฟน:</p>
                     <ul class="list-disc pl-5 space-y-1 mb-3">
-                        <li><strong>Chow (เรียง):</strong> ไพ่ตัวเลขชนิดเดียวกันเรียงลำดับ 3 ใบ เช่น 2-3-4</li>
-                        <li><strong>Pung (ตอง):</strong> ไพ่เหมือนกัน 3 ใบ</li>
-                        <li><strong>Kong (สี่):</strong> ไพ่เหมือนกัน 4 ใบ</li>
-                        <li><strong>Eye (ตา):</strong> ไพ่คู่เหมือนกัน 2 ใบ (ใช้เป็นคู่จบ)</li>
+                        <li><strong>การเลือกใช้ฟอนต์:</strong> เน้นฟอนต์ที่อ่านง่าย สบายตา เช่น ฟอนต์ Kanit หรือฟอนต์มาตรฐาน</li>
+                        <li><strong>การจัดลำดับหัวข้อ:</strong> ใช้ขนาดย่อหน้าและหัวข้อ (Heading) ให้มีลำดับขั้นชัดเจน</li>
+                        <li><strong>การผสมผสานสีและไอคอน:</strong> เพิ่มความน่าสนใจด้วยโทนสีที่กลมกลืนและไอคอนประกอบ</li>
                     </ul>
-                    <p class="text-amber-400 text-xs">สูตรสำเร็จของการชนะ: (3 + 3 + 3 + 3 + 2) = 14 ใบ</p>
+                    <p class="text-amber-400 text-xs">ความสะอาดตาของหน้าเว็บ/E-book ช่วยเพิ่มระยะเวลาการอ่านของผู้ใช้งานได้เป็นอย่างดี</p>
                 `
             },
             3: {
-                title: "บทที่ 3: กลยุทธ์การเล่นเบื้องต้น (Basic Strategies)",
+                title: "บทที่ 3: กลยุทธ์การเผยแพร่ (Publishing Strategies)",
                 content: `
-                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 3: เทคนิคและการอ่านเกม</h3>
-                    <p class="mb-3">เคล็ดลับสำหรับผู้เริ่มเล่นเพื่อเพิ่มโอกาสชนะ:</p>
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 3: ช่องทางและการกระจายเนื้อหา</h3>
+                    <p class="mb-3">แนวทางการเผยแพร่ผลงาน E-book ให้เข้าถึงกลุ่มเป้าหมาย:</p>
                     <ul class="list-disc pl-5 space-y-1 mb-3">
-                        <li><strong>การทิ้งไพ่ช่วงแรก:</strong> ให้เลือกทิ้งไพ่ทิศหรือมังกรที่ไม่ครบคู่ก่อนเพื่อเปิดทาง</li>
-                        <li><strong>การเก็บไพ่กลาง:</strong> ไพ่ตัวเลข 3, 4, 5, 6, 7 มีโอกาสเกิด Chow ได้ง่ายที่สุด</li>
-                        <li><strong>การคุมเกม:</strong> สังเกตการทิ้งไพ่ของคู่แข่งเพื่อเลี่ยงการทิ้งไพ่แจกแต้ม (Don't Feed)</li>
+                        <li><strong>การใช้งาน GitHub Pages:</strong> โฮสต์เว็บไซต์และ E-book ฟรี รวดเร็ว และเข้าถึงได้ทั่วโลก</li>
+                        <li><strong>การใช้ Custom Domain:</strong> สร้างความน่าเชื่อถือด้วยชื่อโดเมนส่วนตัว</li>
+                        <li><strong>การตลาดผ่านคอนเทนต์:</strong> แชร์ความรู้บางส่วนเพื่อดึงดูดผู้เข้าชม</li>
                     </ul>
                 `
             },
             4: {
                 title: "บทที่ 4: การเชื่อมต่อ Web3 & Pi Network",
                 content: `
-                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 4: จากเกมสู่ระบบนิเวศน์ Web3</h3>
-                    <p class="mb-3">แอปพลิเคชัน Web3Book นำทฤษฎีเกม Mahjong มาประยุกต์ร่วมกับบล็อกเชน Pi Network:</p>
+                    <h3 class="text-lg font-bold gold-text mb-3">บทที่ 4: สู่ระบบนิเวศน์ Decentralized</h3>
+                    <p class="mb-3">การประยุกต์ใช้ Web3Book ร่วมกับโครงสร้างพื้นฐานของ Pi Network:</p>
                     <ul class="list-disc pl-5 space-y-1 mb-3">
-                        <li><strong>Pi SDK Integration:</strong> รองรับระบบการชำระเงินและสิทธิ์ใช้งานผ่าน Pi Browser</li>
-                        <li><strong>Decentralized Content:</strong> ข้อมูลหนังสือเปิดกว้าง รวดเร็ว และปลอดภัย</li>
-                        <li><strong>AI Assistant:</strong> ผสาน Gemini 2.5 ช่วยวิเคราะห์และให้คำแนะนำแบบ Real-time</li>
+                        <li><strong>Pi SDK & Developer Portal:</strong> เชื่อมต่อระบบกระเป๋าเงินและการยืนยันตัวตน</li>
+                        <li><strong>AI Integration:</strong> ใช้ Gemini 2.0 Flash เป็นผู้ช่วยอัจฉริยะตอบคำถามในเล่ม</li>
+                        <li><strong>Decentralized Utility:</strong> สร้างประโยชน์ใช้งานจริงให้กับชุมชนผู้บุกเบิก (Pioneers)</li>
                     </ul>
                 `
             }
@@ -259,6 +258,7 @@
             statusDiv.classList.remove("hidden");
         }
 
+        // Test API Function with gemini-2.0-flash & Error Handling
         async function testApiKey() {
             const key = document.getElementById("apiKeyInput").value.trim() || localStorage.getItem("gemini_api_key");
             if(!key) {
@@ -266,10 +266,11 @@
                 return;
             }
 
+            console.log("Testing API with model: gemini-2.0-flash, Key prefix:", key.substring(0, 6) + "...");
             showApiStatus("กำลังทดสอบการเชื่อมต่อ API...", "bg-blue-900/80 text-blue-200");
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -277,18 +278,23 @@
                     })
                 });
 
+                const data = await response.json();
+                console.log("API Test Response:", data);
+
                 if(response.ok) {
-                    showApiStatus("✅ การเชื่อมต่อสำเร็จ! API Key และ Model Gemini 2.5 พร้อมใช้งาน 100%", "bg-emerald-900/80 text-emerald-200");
+                    showApiStatus("✅ การเชื่อมต่อสำเร็จ! API Key และ Model Gemini 2.0 Flash พร้อมใช้งาน 100%", "bg-emerald-900/80 text-emerald-200");
                 } else {
-                    const errData = await response.json();
-                    showApiStatus(`❌ ทดสอบล้มเหลว: ${errData.error?.message || 'API Response Error'}`, "bg-rose-900/80 text-rose-200");
+                    const errorMsg = data.error?.message || 'API Response Error';
+                    console.error("API Error Status:", response.status, errorMsg);
+                    showApiStatus(`❌ ทดสอบล้มเหลว (Status ${response.status}): ${errorMsg}`, "bg-rose-900/80 text-rose-200");
                 }
             } catch(err) {
+                console.error("Fetch Exception:", err);
                 showApiStatus(`❌ ข้อผิดพลาดในการเชื่อมต่อ: ${err.message}`, "bg-rose-900/80 text-rose-200");
             }
         }
 
-        // Chat AI Handler
+        // Chat AI Handler using gemini-2.0-flash & Error Handling
         async function handleSendMessage(e) {
             e.preventDefault();
             const inputEl = document.getElementById("userInput");
@@ -307,24 +313,31 @@
             const loadingId = appendChatMessage("AI", "กำลังคิดคำตอบ...");
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                console.log("Sending Chat Request to gemini-2.0-flash...");
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ 
                             parts: [{ 
-                                text: `คุณคือ Mahjong AI ผู้ช่วยประจำหนังสือ Web3Book ของคุณ Prapakon (Prakorn) ให้ตอบคำถามเกี่ยวกับไพ่นกกระจอก E-book หรือ Web3 อย่างสุภาพ เป็นกันเอง และสั้นกระชับ:\nคำถาม: ${text}` 
+                                text: `คุณคือ Mahjong AI ผู้ช่วยอัจฉริยะประจำหนังสือ Web3Book ของคุณ Prapakon (Prakorn) ให้ตอบคำถามเกี่ยวกับเนื้อหา E-book การเผยแพร่หนังสือดิจิทัล หรือระบบ Web3 อย่างสุภาพ เป็นกันเอง และสั้นกระชับ (ห้ามตอบเรื่องกติกาเกมไพ่ ให้เน้นเรื่องหนังสือและความรู้ดิจิทัล):\nคำถาม: ${text}` 
                             }] 
                         }]
                     })
                 });
 
                 const data = await response.json();
-                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ไม่สามารถประมวลผลคำตอบได้";
-                
+                console.log("Chat Response Data:", data);
+
+                if(!response.ok) {
+                    throw new Error(data.error?.message || `HTTP error! status: ${response.status}`);
+                }
+
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ไม่สามารถประมวลผลคำตอบได้ในขณะนี้";
                 updateChatMessage(loadingId, reply);
             } catch(err) {
-                updateChatMessage(loadingId, `เกิดข้อผิดพลาด: ${err.message}`);
+                console.error("Chat Error:", err);
+                updateChatMessage(loadingId, `เกิดข้อผิดพลาดในการประมวลผล: ${err.message}`);
             }
         }
 
@@ -360,5 +373,3 @@
     </script>
 </body>
 </html>
-
-
