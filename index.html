@@ -42,7 +42,7 @@
                     <p class="text-xs text-slate-400">ผู้พัฒนา/เจ้าของแอป: <span class="text-emerald-400 font-semibold">Prapakon (Prakorn)</span></p>
                 </div>
             </div>
-            <span class="bg-amber-500/10 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">v1.5 Stable</span>
+            <span class="bg-amber-500/10 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">v3.8 Release</span>
         </div>
     </header>
 
@@ -122,12 +122,11 @@
         Web3Book Application &copy; 2026 Developed by Prapakon (Prakorn)
     </footer>
 
-    <!-- JavaScript logic -->
+    <!-- JavaScript logic with Advanced Error Handling & Retry -->
     <script>
-        // ใช้รุ่น gemini-1.5-flash ที่มีความเสถียรและรองรับกว้างที่สุด
         const MODEL_NAME = "gemini-3.8-flash";
+        let lastUserPrompt = ""; // เก็บคําถามล่าสุดไว้สําหรับปุ่ม "ลองใหม่"
 
-        // อ่าน Key จาก LocalStorage เมื่อโหลดหน้า
         document.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem('gemini_api_key');
             if (savedKey) {
@@ -171,8 +170,7 @@
                 return;
             }
 
-            showResult('⏳ กำลังทดสอบเชื่อมต่อกับ Google Gemini API (1.5 Flash)...', true);
-
+            showResult('⏳ กำลังทดสอบเชื่อมต่อกับ Google Gemini API (3.8 Flash)...', true);
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${key}`;
 
             try {
@@ -190,10 +188,17 @@
                     console.log("API Response Success:", data);
                     showResult(`✅ **ทดสอบสำเร็จ!** ระบบเชื่อมต่อโมเดล ${MODEL_NAME} ได้อย่างสมบูรณ์แบบ`, true);
                 } else {
-                    console.error("API Error Response:", data);
+                    const statusCode = response.status;
                     const errorMsg = data.error?.message || "ไม่สามารถระบุสาเหตุได้";
-                    const statusCode = data.error?.code || response.status;
-                    showResult(`❌ **ทดสอบล้มเหลว (Status ${statusCode}):** ${errorMsg}`, false);
+                    console.error(`[API Error Log] Status Code: ${statusCode}`, data);
+                    
+                    if (statusCode === 503) {
+                        showResult(`❌ **ทดสอบล้มเหลว (Status 503):** ระบบไม่พร้อมชั่วคราว (High Demand) กรุณาลองใหม่อีกครั้งใน 1-2 นาที`, false);
+                    } else if (statusCode === 429) {
+                        showResult(`❌ **ทดสอบล้มเหลว (Status 429):** โควตาการใช้งานเต็มชั่วคราว กรุณารอสักครู่`, false);
+                    } else {
+                        showResult(`❌ **ทดสอบล้มเหลว (Status ${statusCode}):** ${errorMsg}`, false);
+                    }
                 }
             } catch (err) {
                 console.error("Network Fetch Error:", err);
@@ -212,37 +217,142 @@
                 return;
             }
 
-            // แสดงข้อความฝั่งผู้ใช้
+            lastUserPrompt = message; // บันทึกไว้ใช้ยิงซ้ำกรณีเกิด Error
             appendMessage('ท่านแม่ทัพ', message, 'user');
             input.value = '';
 
-            // แสดงสถานะกำลังคิด
             const loadingId = appendMessage('🤖 Mahjong AI', 'กำลังประมวลผล...', 'ai');
+            
+            // เริ่มต้นกระบวนการส่งข้อความพร้อม Retry และ Timeout
+            await executeWithRetry(message, key, loadingId);
+        }
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${key}`;
+        async function executeWithRetry(promptText, apiKey, loadingId) {
+            const maxRetries = 3;
+            const retryDelayMs = 3000; // รอ 3 วินาทีก่อนลองใหม่
+            const timeoutMs = 60000;   // Timeout 60 วินาที
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: message }] }]
-                    })
-                });
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-                const data = await response.json();
-                const loadingElem = document.getElementById(loadingId);
+                try {
+                    console.log(`[Mahjong AI] กำลังส่งคำขอ (ครั้งที่ ${attempt}/${maxRetries})...`);
 
-                if (response.ok && data.candidates && data.candidates[0].content.parts[0].text) {
-                    const replyText = data.candidates[0].content.parts[0].text;
-                    loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-slate-300">${replyText.replace(/\n/g, '<br>')}</p>`;
-                } else {
-                    const errDetail = data.error?.message || "เกิดปัญหาในการดึงคำตอบ";
-                    loadingElem.innerHTML = `<p class="text-rose-400 font-semibold mb-1">🤖 Mahjong AI Error:</p><p class="text-rose-300">${errDetail}</p>`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        signal: controller.signal,
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: promptText }] }]
+                        })
+                    });
+
+                    clearTimeout(timeoutId);
+                    const data = await response.json();
+                    const loadingElem = document.getElementById(loadingId);
+
+                    if (response.ok) {
+                        const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (replyText) {
+                            loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-slate-300">${replyText.replace(/\n/g, '<br>')}</p>`;
+                            return;
+                        } else {
+                            throw new Error("RESPONSE_STRUCTURE_INVALID");
+                        }
+                    }
+
+                    const statusCode = response.status;
+                    console.error(`[Mahjong AI Error Log] HTTP Status Code: ${statusCode}`, data);
+
+                    // หากเจอ 503 หรือ 429 และยังไม่ครบจำนวนรอบที่กำหนด ให้รอแล้ว Retry ต่ออัตโนมัติ
+                    if ((statusCode === 503 || statusCode === 429) && attempt < maxRetries) {
+                        console.warn(`[Mahjong AI] เซิร์ฟเวอร์หนาแน่น (Status ${statusCode}) กำลังลองใหม่อีกครั้งใน 3 วินาที...`);
+                        loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-amber-300/80 text-xs">⚠️ เซิร์ฟเวอร์หนาแน่น กำลังลองใหม่อีกครั้ง (รอบที่ ${attempt + 1}/${maxRetries})...</p>`;
+                        await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+                        continue;
+                    }
+
+                    // หากครบโควตา Retry แล้วยังไม่ผ่าน แสดงข้อความ Error พร้อมปุ่ม "ลองใหม่"
+                    renderApiErrorUI(loadingId, statusCode);
+                    return;
+
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    const loadingElem = document.getElementById(loadingId);
+
+                    if (error.name === 'AbortError') {
+                        console.error(`[Mahjong AI Error Log] Request Timeout (เกิน 60 วินาที)`);
+                        renderCustomErrorUI(loadingId, "⏳ การเชื่อมต่อใช้เวลานานเกินไป (Timeout 60 วินาที) กรุณาตรวจสอบอินเทอร์เน็ตหรือลองใหม่อีกครั้ง");
+                        return;
+                    }
+
+                    console.error(`[Mahjong AI Error Log] Network/Fetch Error:`, error);
+
+                    if (attempt < maxRetries) {
+                        console.warn(`[Mahjong AI] เกิดข้อผิดพลาดเครือข่าย กำลังลองใหม่ครั้งที่ ${attempt + 1}...`);
+                        await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+                    } else {
+                        renderCustomErrorUI(loadingId, "⚠️ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของท่าน");
+                        return;
+                    }
                 }
-            } catch (err) {
-                const loadingElem = document.getElementById(loadingId);
-                loadingElem.innerHTML = `<p class="text-rose-400 font-semibold mb-1">🤖 Mahjong AI Error:</p><p class="text-rose-300">เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย: ${err.message}</p>`;
+            }
+        }
+
+        function renderApiErrorUI(loadingId, statusCode) {
+            const loadingElem = document.getElementById(loadingId);
+            if (!loadingElem) return;
+
+            let message = "";
+            switch (statusCode) {
+                case 503:
+                    message = "⚠️ ระบบไม่พร้อมชั่วคราว (Status 503: High Demand) เนื่องจากมีผู้ใช้งานจำนวนมาก กรุณาลองใหม่อีกครั้งใน 1-2 นาทีครับ";
+                    break;
+                case 429:
+                    message = "⚠️ โควตาการเรียกใช้งานเต็มชั่วคราว (Status 429: Rate Limit Exceeded) กรุณารอสักครู่แล้วลองใหม่ครับ";
+                    break;
+                case 401:
+                case 403:
+                    message = `🔑 Google Gemini API Key ไม่ถูกต้อง หรือไม่มีสิทธิ์เข้าถึงโมเดลนี้ (Status ${statusCode})`;
+                    break;
+                default:
+                    message = `⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อ (Status Code: ${statusCode}) กรุณาลองใหม่อีกครั้ง`;
+                    break;
+            }
+
+            renderErrorWithRetryButton(loadingElem, message);
+        }
+
+        function renderCustomErrorUI(loadingId, message) {
+            const loadingElem = document.getElementById(loadingId);
+            if (!loadingElem) return;
+            renderErrorWithRetryButton(loadingElem, message);
+        }
+
+        function renderErrorWithRetryButton(element, messageText) {
+            element.className = 'bg-rose-950/60 p-3 rounded-xl border border-rose-500/50 max-w-[85%] text-rose-200';
+            element.innerHTML = `
+                <p class="text-rose-400 font-semibold mb-1">⚠️ แจ้งเตือนสถานะระบบ:</p>
+                <p class="text-slate-300 text-sm mb-3">${messageText}</p>
+                <div class="pt-2 border-t border-rose-500/30 flex items-center justify-between">
+                    <span class="text-xs text-rose-300/85">ท่านสามารถกดลองใหม่อีกครั้งได้ทันที</span>
+                    <button onclick="retryLastMessage()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-lg transition-all shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> ลองใหม่
+                    </button>
+                </div>
+            `;
+        }
+
+        function retryLastMessage() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (lastUserPrompt && key) {
+                appendMessage('ท่านแม่ทัพ', lastUserPrompt, 'user');
+                const loadingId = appendMessage('🤖 Mahjong AI', 'กำลังลองใหม่อีกครั้ง...', 'ai');
+                executeWithRetry(lastUserPrompt, key, loadingId);
+            } else {
+                alert("กรุณาตรวจสอบการกรอก API Key ก่อนลองใหม่อีกครั้งครับ");
             }
         }
 
@@ -267,5 +377,4 @@
     </script>
 </body>
 </html>
-
 
