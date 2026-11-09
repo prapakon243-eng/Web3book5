@@ -42,33 +42,44 @@
                     <p class="text-xs text-slate-400">ผู้พัฒนา/เจ้าของแอป: <span class="text-emerald-400 font-semibold">Prapakon (Prakorn)</span></p>
                 </div>
             </div>
-            <span class="bg-amber-500/10 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">v3.8 Release</span>
+            <span class="bg-amber-500/10 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30">v3.8 Multi-Key</span>
         </div>
     </header>
 
     <!-- Main Content Container -->
     <main class="max-w-4xl w-full mx-auto p-4 flex-grow space-y-6">
 
-        <!-- 1. API Key Setting Section -->
+        <!-- 1. API Key Setting Section (รองรับ 2 Keys) -->
         <section class="card-bg rounded-2xl p-5 shadow-xl">
             <div class="flex items-center space-x-2 mb-3">
                 <i class="fa-solid fa-key text-amber-400 text-lg"></i>
-                <h2 class="text-lg font-semibold text-slate-100">ตั้งค่า Google Gemini API Key</h2>
+                <h2 class="text-lg font-semibold text-slate-100">ตั้งค่า Google Gemini API Keys</h2>
             </div>
-            <p class="text-xs text-slate-400 mb-4">* กรอก API Key จาก Google AI Studio เพื่อเปิดใช้งานผู้ช่วย AI</p>
+            <p class="text-xs text-slate-400 mb-4">* ระบบจะใช้ Key 1 เป็นหลัก หากหนาแน่น/เต็ม จะสลับไปใช้ Key 2 สำรองให้อัตโนมัติ</p>
             
             <div class="space-y-3">
-                <input type="password" id="apiKeyInput" placeholder="วาง API Key ที่นี่ (AIzaSy...)" 
-                    class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                <!-- Key 1 (หลัก) -->
+                <div>
+                    <label class="text-xs text-amber-400 font-semibold mb-1 block">🔑 API Key 1 (หลัก):</label>
+                    <input type="password" id="apiKeyInput1" placeholder="วาง API Key หลักที่นี่ (AIzaSy...)" 
+                        class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                </div>
+
+                <!-- Key 2 (สำรอง) -->
+                <div>
+                    <label class="text-xs text-slate-400 font-semibold mb-1 block">🔑 API Key 2 (สำรอง - ถ้ามี):</label>
+                    <input type="password" id="apiKeyInput2" placeholder="วาง API Key สำรองที่นี่ (AIzaSy...)" 
+                        class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                </div>
                 
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="saveApiKey()" class="gold-gradient text-slate-950 font-semibold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition flex-1 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-floppy-disk"></i> บันทึก Key
+                <div class="flex flex-wrap gap-2 pt-2">
+                    <button onclick="saveApiKeys()" class="gold-gradient text-slate-950 font-semibold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition flex-1 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> บันทึก Keys
                     </button>
-                    <button onclick="clearApiKey()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                    <button onclick="clearApiKeys()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-trash"></i> ล้าง
                     </button>
-                    <button onclick="testApiKey()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition flex-1 flex items-center justify-center gap-2">
+                    <button onclick="testApiKeys()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition flex-1 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-vial"></i> ทดสอบ API
                     </button>
                 </div>
@@ -122,32 +133,37 @@
         Web3Book Application &copy; 2026 Developed by Prapakon (Prakorn)
     </footer>
 
-    <!-- JavaScript logic with Advanced Error Handling & Retry -->
+    <!-- JavaScript logic with Multi-Key Fallback & Advanced Retry -->
     <script>
         const MODEL_NAME = "gemini-3.8-flash";
         let lastUserPrompt = ""; // เก็บคําถามล่าสุดไว้สําหรับปุ่ม "ลองใหม่"
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedKey = localStorage.getItem('gemini_api_key');
-            if (savedKey) {
-                document.getElementById('apiKeyInput').value = savedKey;
-            }
+            const savedKey1 = localStorage.getItem('gemini_api_key_1');
+            const savedKey2 = localStorage.getItem('gemini_api_key_2');
+            if (savedKey1) document.getElementById('apiKeyInput1').value = savedKey1;
+            if (savedKey2) document.getElementById('apiKeyInput2').value = savedKey2;
         });
 
-        function saveApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            if (!key) {
-                showResult('กรุณากรอก API Key ก่อนกดบันทึก', false);
+        function saveApiKeys() {
+            const key1 = document.getElementById('apiKeyInput1').value.trim();
+            const key2 = document.getElementById('apiKeyInput2').value.trim();
+            
+            if (!key1 && !key2) {
+                showResult('กรุณากรอก API Key อย่างน้อย 1 ช่องก่อนกดบันทึก', false);
                 return;
             }
-            localStorage.setItem('gemini_api_key', key);
-            showResult('✅ บันทึก API Key เรียบร้อยแล้ว!', true);
+            localStorage.setItem('gemini_api_key_1', key1);
+            localStorage.setItem('gemini_api_key_2', key2);
+            showResult('✅ บันทึก API Keys เรียบร้อยแล้ว!', true);
         }
 
-        function clearApiKey() {
-            localStorage.removeItem('gemini_api_key');
-            document.getElementById('apiKeyInput').value = '';
-            showResult('🗑️ ล้างข้อมูล API Key เรียบร้อยแล้ว', false);
+        function clearApiKeys() {
+            localStorage.removeItem('gemini_api_key_1');
+            localStorage.removeItem('gemini_api_key_2');
+            document.getElementById('apiKeyInput1').value = '';
+            document.getElementById('apiKeyInput2').value = '';
+            showResult('🗑️ ล้างข้อมูล API Keys เรียบร้อยแล้ว', false);
         }
 
         function showResult(message, isSuccess) {
@@ -163,15 +179,18 @@
             box.innerHTML = message;
         }
 
-        async function testApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            if (!key) {
+        async function testApiKeys() {
+            const key1 = document.getElementById('apiKeyInput1').value.trim();
+            const key2 = document.getElementById('apiKeyInput2').value.trim();
+            const activeKey = key1 || key2;
+
+            if (!activeKey) {
                 showResult('❌ กรุณากรอก API Key ก่อนทดสอบ', false);
                 return;
             }
 
             showResult('⏳ กำลังทดสอบเชื่อมต่อกับ Google Gemini API (3.8 Flash)...', true);
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${key}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${activeKey}`;
 
             try {
                 const response = await fetch(url, {
@@ -195,7 +214,7 @@
                     if (statusCode === 503) {
                         showResult(`❌ **ทดสอบล้มเหลว (Status 503):** ระบบไม่พร้อมชั่วคราว (High Demand) กรุณาลองใหม่อีกครั้งใน 1-2 นาที`, false);
                     } else if (statusCode === 429) {
-                        showResult(`❌ **ทดสอบล้มเหลว (Status 429):** โควตาการใช้งานเต็มชั่วคราว กรุณารอสักครู่`, false);
+                        showResult(`❌ **ทดสอบล้มเหลว (Status 429):** ขณะนี้มีผู้ใช้จำนวนมาก กรุณารอ 1-2 นาทีแล้วลองใหม่`, false);
                     } else {
                         showResult(`❌ **ทดสอบล้มเหลว (Status ${statusCode}):** ${errorMsg}`, false);
                     }
@@ -209,10 +228,11 @@
         async function sendMessage() {
             const input = document.getElementById('userInput');
             const message = input.value.trim();
-            const key = document.getElementById('apiKeyInput').value.trim();
+            const key1 = document.getElementById('apiKeyInput1').value.trim();
+            const key2 = document.getElementById('apiKeyInput2').value.trim();
 
             if (!message) return;
-            if (!key) {
+            if (!key1 && !key2) {
                 alert('กรุณากรอกและบันทึก API Key ก่อนเริ่มแชทครับ');
                 return;
             }
@@ -223,79 +243,94 @@
 
             const loadingId = appendMessage('🤖 Mahjong AI', 'กำลังประมวลผล...', 'ai');
             
-            // เริ่มต้นกระบวนการส่งข้อความพร้อม Retry และ Timeout
-            await executeWithRetry(message, key, loadingId);
+            // เริ่มต้นกระบวนการส่งข้อความพร้อม Fallback Key และ Retry
+            await executeWithRetryAndFallback(message, key1, key2, loadingId);
         }
 
-        async function executeWithRetry(promptText, apiKey, loadingId) {
-            const maxRetries = 3;
-            const retryDelayMs = 3000; // รอ 3 วินาทีก่อนลองใหม่
-            const timeoutMs = 60000;   // Timeout 60 วินาที
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
+        async function executeWithRetryAndFallback(promptText, key1, key2, loadingId) {
+            // ดึง Keys ที่มีมาจัดลง Array
+            const availableKeys = [];
+            if (key1) availableKeys.push({ name: "Key 1 (หลัก)", value: key1 });
+            if (key2) availableKeys.push({ name: "Key 2 (สำรอง)", value: key2 });
 
-            for (let attempt = 1; attempt <= maxRetries; attempt++) {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            const maxRetriesPerKey = 2; // ลอง Key ละ 2 รอบ
+            const retryDelayMs = 3000;
+            const timeoutMs = 60000;
 
-                try {
-                    console.log(`[Mahjong AI] กำลังส่งคำขอ (ครั้งที่ ${attempt}/${maxRetries})...`);
+            for (let k = 0; k < availableKeys.length; k++) {
+                const currentKey = availableKeys[k];
+                console.log(`[Mahjong AI] กำลังใช้งาน ${currentKey.name}`);
 
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        signal: controller.signal,
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: promptText }] }]
-                        })
-                    });
+                for (let attempt = 1; attempt <= maxRetriesPerKey; attempt++) {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${currentKey.value}`;
 
-                    clearTimeout(timeoutId);
-                    const data = await response.json();
-                    const loadingElem = document.getElementById(loadingId);
+                    try {
+                        console.log(`[Mahjong AI] ส่งคำขอด้วย ${currentKey.name} (พยายามครั้งที่ ${attempt}/${maxRetriesPerKey})...`);
 
-                    if (response.ok) {
-                        const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                        if (replyText) {
-                            loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-slate-300">${replyText.replace(/\n/g, '<br>')}</p>`;
-                            return;
-                        } else {
-                            throw new Error("RESPONSE_STRUCTURE_INVALID");
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            signal: controller.signal,
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: promptText }] }]
+                            })
+                        });
+
+                        clearTimeout(timeoutId);
+                        const data = await response.json();
+                        const loadingElem = document.getElementById(loadingId);
+
+                        if (response.ok) {
+                            const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if (replyText) {
+                                loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-slate-300">${replyText.replace(/\n/g, '<br>')}</p>`;
+                                return; // สำเร็จ ตัดจบฟังก์ชัน
+                            }
                         }
-                    }
 
-                    const statusCode = response.status;
-                    console.error(`[Mahjong AI Error Log] HTTP Status Code: ${statusCode}`, data);
+                        const statusCode = response.status;
+                        console.error(`[Mahjong AI Error Log] ${currentKey.name} -> HTTP Status: ${statusCode}`, data);
 
-                    // หากเจอ 503 หรือ 429 และยังไม่ครบจำนวนรอบที่กำหนด ให้รอแล้ว Retry ต่ออัตโนมัติ
-                    if ((statusCode === 503 || statusCode === 429) && attempt < maxRetries) {
-                        console.warn(`[Mahjong AI] เซิร์ฟเวอร์หนาแน่น (Status ${statusCode}) กำลังลองใหม่อีกครั้งใน 3 วินาที...`);
-                        loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-amber-300/80 text-xs">⚠️ เซิร์ฟเวอร์หนาแน่น กำลังลองใหม่อีกครั้ง (รอบที่ ${attempt + 1}/${maxRetries})...</p>`;
-                        await new Promise(resolve => setTimeout(resolve, retryDelayMs));
-                        continue;
-                    }
+                        // ถ้าเจอ 429/503 แล้วยังมี Key สำรองเหลืออยู่ ให้สลับ Key ทันที
+                        if ((statusCode === 429 || statusCode === 503) && k < availableKeys.length - 1) {
+                            console.warn(`[Mahjong AI] ${currentKey.name} หนาแน่น/เต็ม กำลังสลับไปใช้ Key สำรองอัตโนมัติ...`);
+                            loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-amber-300/80 text-xs">⚠️ ระบบหนาแน่น กำลังสลับไปใช้ API Key สำรอง...</p>`;
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+                            break; // ออกจาก loop attempt ของ key ปัจจุบัน เพื่อไปลูป key ถัดไป
+                        }
 
-                    // หากครบโควตา Retry แล้วยังไม่ผ่าน แสดงข้อความ Error พร้อมปุ่ม "ลองใหม่"
-                    renderApiErrorUI(loadingId, statusCode);
-                    return;
+                        // ถ้ายังเป็น key เดิมแต่ลองใหม่ได้
+                        if (attempt < maxRetriesPerKey) {
+                            loadingElem.innerHTML = `<p class="text-amber-400 font-semibold mb-1">🤖 Mahjong AI:</p><p class="text-amber-300/80 text-xs">⚠️ หนาแน่นชั่วคราว กำลังลองใหม่อีกครั้ง...</p>`;
+                            await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+                            continue;
+                        }
 
-                } catch (error) {
-                    clearTimeout(timeoutId);
-                    const loadingElem = document.getElementById(loadingId);
+                        // ถ้าลองหมดทุก Key แล้วยังไม่ได้ ให้แสดง Error ชัดเจน
+                        if (k === availableKeys.length - 1 && attempt === maxRetriesPerKey) {
+                            renderApiErrorUI(loadingId, statusCode);
+                            return;
+                        }
 
-                    if (error.name === 'AbortError') {
-                        console.error(`[Mahjong AI Error Log] Request Timeout (เกิน 60 วินาที)`);
-                        renderCustomErrorUI(loadingId, "⏳ การเชื่อมต่อใช้เวลานานเกินไป (Timeout 60 วินาที) กรุณาตรวจสอบอินเทอร์เน็ตหรือลองใหม่อีกครั้ง");
-                        return;
-                    }
+                    } catch (error) {
+                        clearTimeout(timeoutId);
+                        const loadingElem = document.getElementById(loadingId);
 
-                    console.error(`[Mahjong AI Error Log] Network/Fetch Error:`, error);
+                        if (error.name === 'AbortError') {
+                            console.error(`[Mahjong AI Error Log] Request Timeout (เกิน 60 วินาที)`);
+                            renderCustomErrorUI(loadingId, "⏳ ระบบใช้เวลานานเกินไปในการประมวลผล ลองถามสั้นลงหรือกดลองใหม่อีกครั้งครับ");
+                            return;
+                        }
 
-                    if (attempt < maxRetries) {
-                        console.warn(`[Mahjong AI] เกิดข้อผิดพลาดเครือข่าย กำลังลองใหม่ครั้งที่ ${attempt + 1}...`);
-                        await new Promise(resolve => setTimeout(resolve, retryDelayMs));
-                    } else {
-                        renderCustomErrorUI(loadingId, "⚠️ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของท่าน");
-                        return;
+                        console.error(`[Mahjong AI Error Log] Network Error:`, error);
+                        if (attempt < maxRetriesPerKey) {
+                            await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+                        } else if (k === availableKeys.length - 1) {
+                            renderCustomErrorUI(loadingId, "⚠️ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่ครับ");
+                            return;
+                        }
                     }
                 }
             }
@@ -308,14 +343,14 @@
             let message = "";
             switch (statusCode) {
                 case 503:
-                    message = "⚠️ ระบบไม่พร้อมชั่วคราว (Status 503: High Demand) เนื่องจากมีผู้ใช้งานจำนวนมาก กรุณาลองใหม่อีกครั้งใน 1-2 นาทีครับ";
+                    message = "⚠️ ขณะนี้ระบบไม่พร้อมชั่วคราว (Status 503) เนื่องจากมีผู้ใช้งานจำนวนมาก กรุณาลองใหม่อีกครั้งใน 1-2 นาทีครับ";
                     break;
                 case 429:
-                    message = "⚠️ โควตาการเรียกใช้งานเต็มชั่วคราว (Status 429: Rate Limit Exceeded) กรุณารอสักครู่แล้วลองใหม่ครับ";
+                    message = "⚠️ ขณะนี้มีผู้ใช้จำนวนมาก (Quota Exceeded) กรุณารอ 1-2 นาทีแล้วกดลองใหม่อีกครั้งครับ";
                     break;
                 case 401:
                 case 403:
-                    message = `🔑 Google Gemini API Key ไม่ถูกต้อง หรือไม่มีสิทธิ์เข้าถึงโมเดลนี้ (Status ${statusCode})`;
+                    message = `🔑 API Key ไม่ถูกต้อง หรือไม่มีสิทธิ์เข้าถึงโมเดลนี้ (Status ${statusCode}) กรุณาเช็ก Key ของท่าน`;
                     break;
                 default:
                     message = `⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อ (Status Code: ${statusCode}) กรุณาลองใหม่อีกครั้ง`;
@@ -346,13 +381,14 @@
         }
 
         function retryLastMessage() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            if (lastUserPrompt && key) {
+            const key1 = document.getElementById('apiKeyInput1').value.trim();
+            const key2 = document.getElementById('apiKeyInput2').value.trim();
+            if (lastUserPrompt && (key1 || key2)) {
                 appendMessage('ท่านแม่ทัพ', lastUserPrompt, 'user');
                 const loadingId = appendMessage('🤖 Mahjong AI', 'กำลังลองใหม่อีกครั้ง...', 'ai');
-                executeWithRetry(lastUserPrompt, key, loadingId);
+                executeWithRetryAndFallback(lastUserPrompt, key1, key2, loadingId);
             } else {
-                alert("กรุณาตรวจสอบการกรอก API Key ก่อนลองใหม่อีกครั้งครับ");
+                alert("กรุณากรอก API Key ก่อนกดลองใหม่อีกครั้งครับ");
             }
         }
 
