@@ -187,14 +187,14 @@
         }
 
         async function callGeminiApi(prompt, apiKey) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             const response = await fetchWithTimeout(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }]
                 })
-            }, 60000); // Extended Timeout: 60 Seconds
+            }, 90000); // Extended Timeout: 90 Seconds
 
             if (!response.ok) {
                 throw new Error(`API Error Status: ${response.status}`);
