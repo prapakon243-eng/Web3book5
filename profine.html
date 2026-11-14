@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บัญชีผู้ใช้ & ชั้นหนังสือ - Web3Book</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#f59e0b', 600: '#d97706' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card-bg { background-color: #1e293b; }
+    .gold-gradient { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between font-sans antialiased">
+
+  <!-- Header / Navigation Bar -->
+  <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-40">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded text-xs">W3B</span>
+        <h1 class="font-bold text-sm text-slate-200">Web3Book & Global Mahjong AI</h1>
+      </div>
+      <a href="index.html" class="text-xs text-amber-400 hover:underline flex items-center gap-1">
+        <i class="fa-solid fa-house"></i> หน้าแรก
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-md w-full mx-auto p-4 flex-grow">
+    <!-- ================= ส่วนที่ 5: ระบบสมาชิก & ชั้นหนังสือ (Member Dashboard) ================= -->
+    <section id="memberDashboard" class="card-bg rounded-xl p-5 shadow-lg space-y-6 border border-slate-700">
+      
+      <!-- 1. ส่วนหัว & ปุ่มออกจากระบบ -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h2 class="text-md font-bold text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-user-shield"></i> บัญชีผู้ใช้ & ชั้นหนังสือ
+        </h2>
+        <button onclick="logoutUser()" class="text-xs bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/50 px-3 py-1.5 rounded-lg transition">
+          <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+        </button>
+      </div>
+
+      <!-- 2. หน้าโปรไฟล์ (รูป ชื่อ อีเมล + แก้ไข) -->
+      <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center gap-4">
+        <img id="userAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Prapakon" alt="Profile" class="w-16 h-16 rounded-full border-2 border-amber-400 bg-slate-800">
+        
+        <div class="flex-grow text-center sm:text-left space-y-1 w-full">
+          <div id="profileDisplay">
+            <h3 id="displayName" class="font-bold text-slate-100 text-base">ท่านแม่ทัพ Prapakon</h3>
+            <p id="displayEmail" class="text-xs text-slate-400">prapakon@web3book.pi</p>
+          </div>
+          
+          <!-- ฟอร์มแก้ไขโปรไฟล์ (ซ่อนไว้ตอนแรก) -->
+          <div id="profileEditForm" class="hidden space-y-2 pt-1">
+            <input type="text" id="editNameInput" placeholder="ชื่อผู้ใช้งาน" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-100">
+            <input type="email" id="editEmailInput" placeholder="อีเมลติดต่อ" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-100">
+            <div class="flex gap-2 justify-center sm:justify-start">
+              <button onclick="saveProfile()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1 rounded font-bold">บันทึก</button>
+              <button onclick="toggleEditProfile()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs px-3 py-1 rounded">ยกเลิก</button>
+            </div>
+          </div>
+        </div>
+
+        <button id="editProfileBtn" onclick="toggleEditProfile()" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-3 py-1.5 rounded-lg whitespace-nowrap">
+          <i class="fa-solid fa-pen-to-square"></i> แก้ไข
+        </button>
+      </div>
+
+      <!-- 3. ประวัติการซื้อ & ระบบอ่าน/ดาวน์โหลดหนังสือ -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-book-open text-amber-400"></i> ประวัติการซื้อ & หนังสือของฉัน
+        </h3>
+        
+        <div id="purchasedBooksList" class="space-y-2.5">
+          <!-- รายการหนังสือจะถูกดึงมาแสดงตรงนี้อัตโนมัติ -->
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Modal สำหรับอ่านหนังสือออนไลน์ -->
+  <div id="readerModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h4 id="readerTitle" class="font-bold text-amber-400 text-sm">ชื่อหนังสือ</h4>
+        <button onclick="closeReader()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="readerContent" class="text-xs text-slate-300 leading-relaxed max-h-60 overflow-y-auto space-y-2">
+        <!-- เนื้อหาหนังสือ -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-slate-800 p-4 text-center text-xs text-slate-500 bg-slate-900/50">
+    Web3Book Application © 2026 Developed by Prapakon (Prakorn)
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    const defaultBooks = [
+      {
+        id: "BK001",
+        title: "ก้าวใหม่วัยเก๋า: คู่มือสุขภาพยุคดิจิทัล",
+        date: "12 พ.ย. 2026",
+        price: "5 Pi",
+        content: "บทที่ 1: การดูแลสุขภาพกายและใจในวัยเก๋าเริ่มต้นง่ายๆ ด้วยการขยับร่างกายสม่ำเสมอและการเรียนรู้เทคโนโลยีใหม่ๆ อย่างมีความสุข..."
+      },
+      {
+        id: "BK002",
+        title: "กลยุทธ์นกกระจอก & Web3 เบื้องต้น",
+        date: "13 พ.ย. 2026",
+        price: "10 Pi",
+        content: "บทที่ 1: พื้นฐานการอ่านเกมและวิเคราะห์ความน่าจะเป็น ผสานกับแนวคิดการสร้างสินทรัพย์ดิจิทัลบนโลก Web3..."
+      }
+    ];
+
+    function initMemberSystem() {
+      const savedName = localStorage.getItem('w3b_user_name') || 'ท่านแม่ทัพ Prapakon';
+      const savedEmail = localStorage.getItem('w3b_user_email') || 'prapakon@web3book.pi';
+      
+      document.getElementById('displayName').textContent = savedName;
+      document.getElementById('displayEmail').textContent = savedEmail;
+      document.getElementById('editNameInput').value = savedName;
+      document.getElementById('editEmailInput').value = savedEmail;
+
+      renderPurchasedBooks();
+    }
+
+    function toggleEditProfile() {
+      document.getElementById('profileDisplay').classList.toggle('hidden');
+      document.getElementById('profileEditForm').classList.toggle('hidden');
+      document.getElementById('editProfileBtn').classList.toggle('hidden');
+    }
+
+    function saveProfile() {
+      const newName = document.getElementById('editNameInput').value.trim();
+      const newEmail = document.getElementById('editEmailInput').value.trim();
+      
+      if (!newName || !newEmail) {
+        alert('กรุณากรอกชื่อและอีเมลให้ครบถ้วนครับ');
+        return;
+      }
+
+      localStorage.setItem('w3b_user_name', newName);
+      localStorage.setItem('w3b_user_email', newEmail);
+      
+      document.getElementById('displayName').textContent = newName;
+      document.getElementById('displayEmail').textContent = newEmail;
+      toggleEditProfile();
+      alert('อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้วครับ!');
+    }
+
+    function renderPurchasedBooks() {
+      const listContainer = document.getElementById('purchasedBooksList');
+      const books = JSON.parse(localStorage.getItem('w
