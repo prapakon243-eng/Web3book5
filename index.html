@@ -42,9 +42,14 @@
                     <p class="text-xs text-slate-400">ผู้พัฒนา/เจ้าของแอป: Prapakon (Prakorn)</p>
                 </div>
             </div>
-            <span class="bg-amber-500/10 text-amber-400 text-xs px-2.5 py-1 rounded-full border border-amber-500/20 font-semibold">
-                v3.8 Multi-Key
-            </span>
+            <div class="flex items-center gap-2">
+                <a href="profile.html" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1 transition">
+                    <i class="fa-solid fa-user-shield"></i> หน้าสมาชิก
+                </a>
+                <span class="bg-amber-500/10 text-amber-400 text-xs px-2.5 py-1 rounded-full border border-amber-500/20 font-semibold">
+                    v3.8 Multi-Key
+                </span>
+            </div>
         </div>
     </header>
 
@@ -95,7 +100,7 @@
                 <h2 class="text-md font-semibold text-slate-200 flex items-center gap-2">
                     <i class="fa-solid fa-robot text-amber-400"></i> Mahjong AI (ผู้ช่วย E-Book & Web3)
                 </h2>
-                <span class="text-xs text-slate-400">Timeout: 60s</span>
+                <span class="text-xs text-slate-400">Timeout: 90s</span>
             </div>
 
             <!-- Chat Box -->
@@ -173,7 +178,7 @@
             }
         }
 
-        async function fetchWithTimeout(url, options, timeout = 60000) {
+        async function fetchWithTimeout(url, options, timeout = 90000) {
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeout);
             try {
@@ -187,14 +192,14 @@
         }
 
         async function callGeminiApi(prompt, apiKey) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             const response = await fetchWithTimeout(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }]
                 })
-            }, 90000); // Extended Timeout: 90 Seconds
+            }, 90000); // Timeout 90 Seconds
 
             if (!response.ok) {
                 throw new Error(`API Error Status: ${response.status}`);
